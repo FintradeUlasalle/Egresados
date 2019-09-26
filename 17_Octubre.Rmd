@@ -1,0 +1,143 @@
+---
+title: "Exploración y Análisis de Datos"
+author: "Andrés Martínez"
+date: "25 9 2019"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+require("knitcitations")
+options("citation_format" = "pandoc")
+```
+
+
+```{r, echo=FALSE, message=FALSE,results='hide',warning=FALSE}
+#install.packages("bookdown")
+#Librerias que se van a utilizar
+library(kableExtra)# Tablas
+library(quantmod)# Descarga de datos
+library(knitcitations)#Citaciones
+library(knitr)#R Markdown
+library(psych)# Medidas descriptivas
+library(RCurl)# La dirección web
+library(readr)# La base de datos
+library(dplyr)# Transformación de tablas
+library(readxl)#Datos en excel
+library(readr)# La base de datos en cvs o txt
+library(httr)# Trabaja mejor en excel
+```
+
+
+
+## Introducción
+
+
+1. Exploración y análisis de datos
+
+    * Introducción y funciones principales
+    *	Trabajo con Datos Cargados de Excel y otros archivos
+    * Creación de Documentos Rmw
+    
+    
+## Funciones básicas
+
+
+```{r, echo=FALSE, message=FALSE,results='hide',warning=FALSE}
+
+
+
+text=getURL("https://raw.githubusercontent.com/Andres1984/Data-Analysis-with-R/master/Bases/SPlista.txt")
+
+#Archivo txt 
+SPlista <- read_csv(file=text)
+
+
+SPlista$Sector[SPlista$Sector=="Consumer Discretionary"]="Cons D"
+SPlista$Sector[SPlista$Sector=="Information Technology"]="IT"
+SPlista$Sector[SPlista$Sector=="Telecommunications Services"]="TS"
+SPlista$Sector[SPlista$Sector=="Consumer Staples"]="Cons S"
+attach(SPlista)
+fabs<-table(Sector)
+fabs=as.data.frame(fabs)
+n=dim(SPlista)
+n<-n[1]
+## Transformación bases de datos con dplyr
+library(dplyr)
+fabs= mutate(fabs, Freqr =fabs$Freq/n)
+fabs= mutate(fabs, FreqA =cumsum(Freq))
+fabs= mutate(fabs, FreqrA =cumsum(Freqr))
+
+
+barplot(fabs$Freqr*100,col = "wheat",names.arg = fabs$Sector,ylab="Freq Rel %")
+title("Sectores")
+
+detach(SPlista)
+
+```
+
+
+## Datos en Excel
+
+```{r, echo=FALSE, message=FALSE,results='hide',warning=FALSE}
+
+url1<-'https://raw.githubusercontent.com/Andres1984/Data-Analysis-with-R/master/Bases/DatosVAR.xlsx'
+GET(url1, write_disk(tf <- tempfile(fileext = ".xlsx"))) 
+Datos <- read_excel(tf)
+
+
+par(mfrow=c(2,2),mar=c(2,2,2,2))
+plot(Datos$Dates,Datos$COP, type="l",col="green",main = "COP",xlab="Dates",ylab="Prices")
+plot(Datos$Dates,Datos$BRL,type="l",col="red",main="BRL",xlab="Dates",ylab="Prices")
+plot(Datos$Dates,Datos$ARS,type="l",col="blue",main="ARS",xlab="Dates",ylab="Prices")
+plot(Datos$Dates,Datos$MXN,type="l",main="MXN",xlab="Dates",ylab="Prices")
+
+```
+
+
+## Archivos cvs
+
+```{r, echo=FALSE, message=FALSE,results='hide',warning=FALSE}
+text=getURL("https://raw.githubusercontent.com/Andres1984/Data-Analysis-with-R/master/Bases/2016.csv")
+
+H2016 <- read_csv(file=text)
+
+# https://www.kaggle.com/unsdsn/world-happiness
+x <- H2016$`Economy (GDP per Capita)`
+y <- H2016$`Happiness Score`
+```
+
+```{r, echo=FALSE, message=FALSE,results='hide',warning=FALSE}
+plot(x, y, main = "HSCOR VS GDP",
+     xlab = "GDP", ylab = "H SCORE",col = "green",
+     pch = 10, frame = FALSE)
+abline(lm( `Happiness Score` ~ `Economy (GDP per Capita)`, data = H2016), col = "blue")
+```
+
+## Gráficos Básicos
+
+```{r, echo=FALSE, message=FALSE,results='hide',warning=FALSE}
+library("car")
+scatterplot(`Happiness Score` ~ `Economy (GDP per Capita)`, data = H2016, col = "blue")
+
+
+```
+
+##
+
+```{r,  echo=FALSE, message=FALSE,results='hide',warning=FALSE}
+qqPlot(H2016$`Happiness Score`,ylab="")
+
+```
+
+##
+
+```{r, echo=FALSE, message=FALSE,results='hide',warning=FALSE}
+hist(H2016$`Happiness Score`,breaks=20,main="HScore", col="red",xlab="")
+```
+
+
+## Conclusiones
+
+
+Espacio para concluir la sesión
