@@ -1,0 +1,42 @@
+---
+title: "Gráficos Dinámicos"
+author: "Andrés Martínez"
+date: "12 11 2019"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Introducción 
+
+
+* Gráficos con GGplot
+* Gráficos con Plotly
+* Animaciones
+
+
+
+## Gráficos con GGplot
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+# Preparación de la Base
+library(RCurl)# La dirección web
+library(readr)# La base de datos en cvs o txt
+library(ggplot2)
+library(viridis)
+text=getURL("https://raw.githubusercontent.com/Andres1984/Data-Analysis-with-R/master/Bases/2016.csv")
+H2016 <- read_csv(file=text)
+colnames(H2016)[7] <- "GDP"
+colnames(H2016)[9] <- "Health"
+colnames(H2016)[11] <- "TrustG"
+colnames(H2016)[4]<-"HScore"
+
+
+```
+
+```{r , echo = FALSE,message=FALSE,warning=FALSE}
+qplot( GDP,Health, data = H2016, colour= Region)
+
+```
